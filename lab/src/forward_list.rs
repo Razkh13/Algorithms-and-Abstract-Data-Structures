@@ -1,7 +1,5 @@
-use crate::container::Container;
-use std::any::Any;
+#![allow(dead_code)]
 
-struct FNode { data: String, next: Option<Box<FNode>> }
 use crate::container::Container;
 use std::any::Any;
 
