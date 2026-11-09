@@ -44,7 +44,6 @@ public:
     void Load(std::ifstream& in) override;
     std::string TypeName() const override { return "AVLTREE"; }
 
-    int GetHeight() const;
     void HuffmanEncode(const std::string& text);
     void HuffmanDecode(const std::string& code, const std::string& table_str);
 };

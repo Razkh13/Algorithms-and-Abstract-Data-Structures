@@ -132,6 +132,7 @@ void Array::Load(ifstream& in) {
     }
 }
 
+
 void Array::PrintSubarrays() {
     int n = size;
     cout << "[";

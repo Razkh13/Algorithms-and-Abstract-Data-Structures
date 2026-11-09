@@ -1,12 +1,13 @@
 #pragma once
 #include "container.h"
-#include "Forward_list/forward_list.h"
+#include <string>
 
 class HashTable : public Container {
     struct Entry {
         std::string key;
+        std::string value;
         bool is_deleted;
-        Entry() : key(""), is_deleted(false) {}
+        Entry() : key(""), value(""), is_deleted(false) {}
     };
 
     int capacity;
@@ -21,8 +22,9 @@ public:
     HashTable(int cap = 10007, int m = 1);
     ~HashTable() override;
 
-    void Add(const std::string& key);
+    void Add(const std::string& key, const std::string& value);
     bool Contains(const std::string& key) const;
+    std::string Get(const std::string& key) const;
     void Remove(const std::string& key);
 
     int LengthOfLongestSubstring(const std::string& s);
@@ -30,7 +32,7 @@ public:
     void SetMethod(int m) { method = m; }
     int GetMethod() const { return method; }
 
-    void Push(const std::string& value) override { Add(value); }
+    void Push(const std::string& value) override { Add(value, ""); }
     void Pop() override;
     void Print() const override;
     bool Find(const std::string& value) const override { return Contains(value); }

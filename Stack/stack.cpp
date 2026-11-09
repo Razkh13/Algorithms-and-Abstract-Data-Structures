@@ -88,6 +88,8 @@ void Stack::Load(ifstream& in) {
     }
 }
 
+
+//////// (1)
 bool Stack::ValidateXML(const std::string& s) const {
     Stack tmp;
     size_t i = 0;
@@ -137,3 +139,4 @@ string Stack::FixXML(const std::string& broken) const {
     if (found > 0) return answer;
     return "Incorrect";
 }
+////////////

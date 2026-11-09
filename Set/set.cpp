@@ -44,9 +44,7 @@ bool Set::Contains(const string& value) const {
     return buckets[idx]->Find(value);
 }
 
-void Set::Push(const string& value) {
-    Add(value);
-}
+void Set::Push(const string& value) { Add(value); }
 
 void Set::Pop() {
     for (int i = 0; i < TABLE_SIZE; ++i) {
@@ -70,9 +68,7 @@ void Set::Print() const {
     cout << endl;
 }
 
-bool Set::Find(const string& value) const {
-    return Contains(value);
-}
+bool Set::Find(const string& value) const { return Contains(value); }
 
 void Set::Save(ofstream& out) const {
     int count = 0;
@@ -111,26 +107,35 @@ vector<string> Set::GetAllElements() const {
     return res;
 }
 
-void Set::Partition(int k) {
+void Set::Partition(int target_sum) {
     vector<int> nums;
     vector<string> raw = GetAllElements();
     int total_sum = 0;
 
     for (const string& s : raw) {
-        nums.push_back(stoi(s));
-        total_sum += stoi(s);
+        try {
+            int val = stoi(s);
+            nums.push_back(val);
+            total_sum += val;
+        } catch (const std::invalid_argument&) {
+            cout << "Ошибка: элемент '" << s << "' не является числом!" << endl;
+            return;
+        } catch (const std::out_of_range&) {
+            cout << "Ошибка: число '" << s << "' слишком большое!" << endl;
+            return;
+        }
     }
 
-    if (k <= 0 || total_sum % k != 0) {
-        cout << "Невозможно разбить: сумма не делится на " << k << endl;
+    if (target_sum <= 0 || total_sum % target_sum != 0) {
+        cout << "Невозможно разбить: сумма " << total_sum << " не делится на " << target_sum << endl;
         return;
     }
 
-    int target = total_sum / k;
+    int k = total_sum / target_sum; 
     sort(nums.rbegin(), nums.rend());
 
-    if (!nums.empty() && nums[0] > target) {
-        cout << "Невозможно разбить: есть число больше целевой суммы " << target << endl;
+    if (!nums.empty() && nums[0] > target_sum) {
+        cout << "Невозможно разбить: есть число больше целевой суммы " << target_sum << endl;
         return;
     }
 
@@ -143,7 +148,7 @@ void Set::Partition(int k) {
         }
 
         for (int i = 0; i < k; ++i) {
-            if (current_sums[i] + nums[index] <= target) {
+            if (current_sums[i] + nums[index] <= target_sum) {
                 if (i > 0 && current_sums[i] == 0 && current_sums[i - 1] == 0) continue;
 
                 current_sums[i] += nums[index];
@@ -159,7 +164,7 @@ void Set::Partition(int k) {
     };
 
     if (backtrack(0)) {
-        cout << "Разбиение на " << k << " множеств (сумма " << target << "):" << endl;
+        cout << "Разбиение на " << k << " множеств (сумма " << target_sum << "):" << endl;
         for (int i = 0; i < k; ++i) {
             cout << "{ ";
             for (int j = 0; j < (int)nums.size(); ++j) {
@@ -168,6 +173,6 @@ void Set::Partition(int k) {
             cout << "}" << endl;
         }
     } else {
-        cout << "Невозможно разбить на " << k << " равных подмножеств." << endl;
+        cout << "Невозможно разбить на подмножества с суммой " << target_sum << endl;
     }
 }

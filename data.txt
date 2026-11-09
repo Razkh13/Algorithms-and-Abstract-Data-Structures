@@ -1,3 +1,1 @@
-s1 STACK
-Кол-во элементов: 0
-
+abracadabra AVLTREE

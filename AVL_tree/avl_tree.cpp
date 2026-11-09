@@ -5,6 +5,7 @@
 #include <map>
 #include <queue>
 #include <sstream>
+#include <cmath>
 using namespace std;
 
 AVLTree::~AVLTree() {
@@ -179,12 +180,6 @@ void AVLTree::Load(ifstream& in) {
     }
 }
 
-
-int AVLTree::GetHeight() const {
-    return Height(root);
-}
-
-
 struct HuffmanNode {
     char ch;
     int freq;
@@ -196,7 +191,10 @@ struct HuffmanNode {
 
 struct Compare {
     bool operator()(HuffmanNode* l, HuffmanNode* r) {
-        return l->freq > r->freq;
+        if (l->freq != r->freq) {
+            return l->freq > r->freq; 
+        }
+        return l->ch > r->ch;
     }
 };
 
@@ -224,6 +222,18 @@ void AVLTree::HuffmanEncode(const string& text) {
 
     map<char, int> freq;
     for (char c : text) freq[c]++;
+
+    if (freq.size() == 1) {
+        char ch = freq.begin()->first;
+        cout << "Таблица кодов:" << endl;
+        cout << ch << " 0" << endl;
+        cout << "Закодированная строка:" << endl;
+        for (size_t i = 0; i < text.length(); ++i) {
+            cout << "0";
+        }
+        cout << endl;
+        return;
+    }
 
     priority_queue<HuffmanNode*, vector<HuffmanNode*>, Compare> pq;
     for (auto pair : freq) {

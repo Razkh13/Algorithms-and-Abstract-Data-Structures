@@ -146,11 +146,29 @@ void DBMS::ExecuteQuery(const string& query) {
 
     if (cmd == "HTADD") {
         int method;
-        iss >> method >> arg1;
+        iss >> method >> arg1 >> arg2;
         if (hashTables.find(name) == hashTables.end()) {
             hashTables[name] = new HashTable(10007, method);
         }
-        hashTables[name]->Add(arg1);
+        hashTables[name]->Add(arg1, arg2);
+        hashTables[name]->Print();
+        return;
+    }
+    else if (cmd == "HTLINEAR") {
+        iss >> arg1 >> arg2;
+        if (hashTables.find(name) == hashTables.end()) {
+            hashTables[name] = new HashTable(10007, 1);
+        }
+        hashTables[name]->Add(arg1, arg2);
+        hashTables[name]->Print();
+        return;
+    }
+    else if (cmd == "HTDOUBLE") {
+        iss >> arg1 >> arg2;
+        if (hashTables.find(name) == hashTables.end()) {
+            hashTables[name] = new HashTable(10007, 2);
+        }
+        hashTables[name]->Add(arg1, arg2);
         hashTables[name]->Print();
         return;
     }
@@ -165,16 +183,20 @@ void DBMS::ExecuteQuery(const string& query) {
     else if (cmd == "HTGET") {
         iss >> arg1;
         if (hashTables.find(name) != hashTables.end()) {
-            if (hashTables[name]->Contains(arg1)) cout << "TRUE" << endl;
-            else cout << "FALSE" << endl;
+            string val = hashTables[name]->Get(arg1); // Используем Get вместо Contains
+            if (val == "NOT_FOUND") cout << "NOT_FOUND" << endl;
+            else cout << val << endl;
+        } else {
+            cout << "NOT_FOUND" << endl;
         }
         return;
     }
     else if (cmd == "HTLONGEST") {
+        iss >> arg1; 
         if (hashTables.find(name) == hashTables.end()) {
             hashTables[name] = new HashTable(10007, 1);
         }
-        cout << hashTables[name]->LengthOfLongestSubstring(name) << endl;
+        cout << hashTables[name]->LengthOfLongestSubstring(arg1) << endl; 
         return;
     }
 
@@ -362,10 +384,10 @@ void DBMS::ExecuteQuery(const string& query) {
         }
     }
     else if (cmd == "SETPARTITION") {
-        int k;
-        iss >> k;
+        int target_sum;
+        iss >> target_sum;
         Set* s = dynamic_cast<Set*>(c);
-        if (s) { s->Partition(k); }
+        if (s) { s->Partition(target_sum); }
     }
     
     else if (cmd == "MSUBARRAYS") {
@@ -373,13 +395,11 @@ void DBMS::ExecuteQuery(const string& query) {
         if (a) { a->PrintSubarrays(); }
     }
 
-    else if (cmd == "THEIGHT") {
-        AVLTree* t = dynamic_cast<AVLTree*>(c);
-        if (t) cout << t->GetHeight() << endl;
-    }
     else if (cmd == "THUFFMAN") {
+        string text;
+        iss >> text; 
         AVLTree* t = dynamic_cast<AVLTree*>(c);
-        if (t) { t->HuffmanEncode(name); }
+        if (t) { t->HuffmanEncode(text); }
     }
     else if (cmd == "THUFFMANDEC") {
         string code, table;

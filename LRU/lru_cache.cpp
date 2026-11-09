@@ -65,7 +65,7 @@ void LRUCache::Set(const string& key, const string& value) {
     }
     Node* newNode = new Node(key, value);
     addToHead(newNode);
-    cache->Add(key);
+    cache->Add(key, value);
     size++;
 }
 

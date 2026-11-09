@@ -27,7 +27,7 @@ int HashTable::hash2(const string& key) const {
     return step == 0 ? 1 : step;
 }
 
-void HashTable::Add(const string& key) {
+void HashTable::Add(const string& key, const string& value) {
     if (size >= capacity) return;
 
     int idx = hash1(key);
@@ -35,12 +35,16 @@ void HashTable::Add(const string& key) {
     int start_idx = idx;
 
     while (table[idx].key != "" && !table[idx].is_deleted) {
-        if (table[idx].key == key) return;
+        if (table[idx].key == key) {
+            table[idx].value = value;
+            return;
+        }
         idx = (idx + step) % capacity;
         if (idx == start_idx) return;
     }
 
     table[idx].key = key;
+    table[idx].value = value;
     table[idx].is_deleted = false;
     size++;
 }
@@ -58,6 +62,21 @@ bool HashTable::Contains(const string& key) const {
     return false;
 }
 
+string HashTable::Get(const string& key) const {
+    int idx = hash1(key);
+    int step = (method == 2) ? hash2(key) : 1;
+    int start_idx = idx;
+
+    while (table[idx].key != "" || table[idx].is_deleted) {
+        if (!table[idx].is_deleted && table[idx].key == key) {
+            return table[idx].value;
+        }
+        idx = (idx + step) % capacity;
+        if (idx == start_idx) break;
+    }
+    return "NOT_FOUND";
+}
+
 void HashTable::Remove(const string& key) {
     int idx = hash1(key);
     int step = (method == 2) ? hash2(key) : 1;
@@ -67,6 +86,7 @@ void HashTable::Remove(const string& key) {
         if (!table[idx].is_deleted && table[idx].key == key) {
             table[idx].is_deleted = true;
             table[idx].key = "";
+            table[idx].value = "";
             size--;
             return;
         }
@@ -78,9 +98,10 @@ void HashTable::Remove(const string& key) {
 void HashTable::Pop() {
     for (int i = 0; i < capacity; ++i) {
         if (table[i].key != "" && !table[i].is_deleted) {
-            cout << table[i].key << endl;
+            cout << table[i].key << " : " << table[i].value << endl;
             table[i].is_deleted = true;
             table[i].key = "";
+            table[i].value = "";
             size--;
             return;
         }
@@ -91,7 +112,7 @@ void HashTable::Pop() {
 void HashTable::Print() const {
     for (int i = 0; i < capacity; ++i) {
         if (table[i].key != "" && !table[i].is_deleted) {
-            cout << table[i].key << " ";
+            cout << table[i].key << ":" << table[i].value << " ";
         }
     }
     cout << endl;
@@ -101,7 +122,7 @@ void HashTable::Save(ofstream& out) const {
     out << "Кол-во элементов: " << size << "\n";
     for (int i = 0; i < capacity; ++i) {
         if (table[i].key != "" && !table[i].is_deleted) {
-            out << table[i].key << " ";
+            out << table[i].key << " " << table[i].value << " ";
         }
     }
     out << "\n";
@@ -110,6 +131,7 @@ void HashTable::Save(ofstream& out) const {
 void HashTable::Load(ifstream& in) {
     for (int i = 0; i < capacity; ++i) {
         table[i].key = "";
+        table[i].value = "";
         table[i].is_deleted = false;
     }
     size = 0;
@@ -118,9 +140,9 @@ void HashTable::Load(ifstream& in) {
     int n;
     if (!(in >> w1 >> w2 >> n) || n < 0) return;
     for (int i = 0; i < n; i++) {
-        string v;
-        if (!(in >> v)) break;
-        Add(v);
+        string k, v;
+        if (!(in >> k >> v)) break;
+        Add(k, v);
     }
 }
 
@@ -128,6 +150,7 @@ int HashTable::LengthOfLongestSubstring(const string& s) {
     if (s.empty()) return 0;
     for (int i = 0; i < capacity; ++i) {
         table[i].key = "";
+        table[i].value = "";
         table[i].is_deleted = false;
     }
     size = 0;
@@ -144,7 +167,7 @@ int HashTable::LengthOfLongestSubstring(const string& s) {
             left++;
         }
         
-        Add(char_str);
+        Add(char_str, "");
         if (right - left + 1 > max_len) {
             max_len = right - left + 1;
         }
